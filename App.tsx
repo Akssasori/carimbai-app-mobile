@@ -7,10 +7,9 @@ import {
   Text,
   StatusBar,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import StaffScreen from './src/screens/StaffScreen';
-import HomeScreen from './src/screens/HomeScreeen';
+import HomeScreen from './src/screens/HomeScreen';
 
 type Mode = 'customer' | 'staff';
 

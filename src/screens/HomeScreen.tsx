@@ -14,12 +14,12 @@ import {apiService} from '../services/api';
 import QRCodeModal from '../components/QRCodeModal';
 import LoyaltyCard from '../components/LoyaltyCards';
 
-interface HomeScreenProps {
+interface HomeScrenProps {
   customerId: number;
   customerName?: string;
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({
+const HomeScreen: React.FC<HomeScrenProps> = ({
   customerId,
   customerName = 'Cliente',
 }) => {
