@@ -9,41 +9,63 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import LinearGradient from 'react-native-linear-gradient';
-import type {QRTokenResponse} from '../types';
+import type {QRTokenResponse, RedeemQrTokenResponse} from '../types';
+import {formatCountdown} from '../utils/formatters';
 
 interface QRCodeModalProps {
-  qrToken: QRTokenResponse | null;
+  qrToken?: QRTokenResponse | null;
+  redeemQrToken?: RedeemQrTokenResponse | null;
   onClose: () => void;
 }
 
-const QRCodeModal: React.FC<QRCodeModalProps> = ({qrToken, onClose}) => {
+const QRCodeModal: React.FC<QRCodeModalProps> = ({
+  qrToken,
+  redeemQrToken,
+  onClose,
+}) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
+  const isRedeem = !!redeemQrToken;
+  const token = redeemQrToken ?? qrToken;
+  const visible = !!token;
+
   useEffect(() => {
-    if (!qrToken) return;
+    if (!token) {
+      return;
+    }
+    const expMs = token.exp * 1000;
+    const calc = () => Math.max(0, Math.floor((expMs - Date.now()) / 1000));
 
-    const updateTimer = () => {
-      const expiresAt = new Date(qrToken.exp * 1000);
-      const now = new Date();
-      const remaining = Math.floor(
-        (expiresAt.getTime() - now.getTime()) / 1000 / 60,
-      );
-      setTimeRemaining(remaining);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 10000); // Atualiza a cada 10s
-
+    setTimeRemaining(calc());
+    const interval = setInterval(() => {
+      setTimeRemaining(calc());
+    }, 1000);
     return () => clearInterval(interval);
-  }, [qrToken]);
+  }, [token]);
 
-  if (!qrToken) return null;
+  if (!visible) {
+    return null;
+  }
 
-  const qrValue = JSON.stringify(qrToken);
+  const qrValue = isRedeem
+    ? JSON.stringify({
+        type: 'REDEEM_QR',
+        payload: redeemQrToken,
+      })
+    : JSON.stringify(qrToken);
+
+  const title = isRedeem ? 'QR de Resgate' : 'Seu QR Code';
+  const hint = isRedeem
+    ? 'Mostre este código ao lojista para resgatar seu prêmio'
+    : 'Mostre este código para o estabelecimento adicionar um carimbo';
+  const timerLabel =
+    timeRemaining > 0
+      ? `Válido por ${formatCountdown(timeRemaining)}`
+      : 'Código expirado';
 
   return (
     <Modal
-      visible={!!qrToken}
+      visible={visible}
       transparent
       animationType="fade"
       onRequestClose={onClose}>
@@ -54,10 +76,8 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({qrToken, onClose}) => {
           </TouchableOpacity>
 
           <View style={styles.header}>
-            <Text style={styles.title}>Seu QR Code</Text>
-            <Text style={styles.subtitle}>
-              Mostre este código para o estabelecimento
-            </Text>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.subtitle}>{hint}</Text>
           </View>
 
           <View style={styles.qrContainer}>
@@ -68,22 +88,13 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({qrToken, onClose}) => {
 
           <View style={styles.info}>
             <LinearGradient
-              colors={['#667eea', '#764ba2']}
+              colors={isRedeem ? ['#ffd89b', '#e8742a'] : ['#667eea', '#764ba2']}
               start={{x: 0, y: 0}}
               end={{x: 1, y: 1}}
               style={styles.timer}>
-              <Text style={styles.timerIcon}>⏱️</Text>
-              <Text style={styles.timerText}>
-                {timeRemaining > 0
-                  ? `Válido por ${timeRemaining} minutos`
-                  : 'Código expirado'}
-              </Text>
+              <Text style={styles.timerIcon}>{isRedeem ? '🎁' : '⏱️'}</Text>
+              <Text style={styles.timerText}>{timerLabel}</Text>
             </LinearGradient>
-
-            <Text style={styles.hint}>
-              O estabelecimento irá escanear este código para adicionar um
-              carimbo ao seu cartão
-            </Text>
           </View>
 
           <TouchableOpacity onPress={onClose}>
@@ -151,7 +162,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     textAlign: 'center',
   },
@@ -179,23 +190,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 24,
-    marginBottom: 16,
     gap: 8,
   },
   timerIcon: {
-    fontSize: 20,
+    fontSize: 18,
   },
   timerText: {
     color: 'white',
     fontSize: 14,
     fontWeight: '600',
-  },
-  hint: {
-    fontSize: 13,
-    color: '#999',
-    textAlign: 'center',
-    lineHeight: 18,
-    paddingHorizontal: 8,
   },
   closeModalButton: {
     paddingVertical: 16,
