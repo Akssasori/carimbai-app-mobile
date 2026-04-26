@@ -37,8 +37,13 @@ const StaffLoginScreen: React.FC = () => {
     try {
       setLoading(true);
       await login(email.trim(), password);
-      navigation.replace('StaffDashboard');
     } catch (err: any) {
+      console.log(
+        '[staff-login-error]',
+        err?.response?.status,
+        err?.response?.data,
+        err?.message,
+      );
       setError(err?.response?.data?.message || err?.message || 'Credenciais inválidas.');
     } finally {
       setLoading(false);
