@@ -23,27 +23,34 @@ const AppNavigator: React.FC = () => {
 
   if (customerLoading || staffLoading) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#667eea'}}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#667eea',
+        }}>
         <ActivityIndicator size="large" color="white" />
       </View>
     );
   }
 
-  const initialRoute: keyof RootStackParamList = customer
-    ? 'CustomerHome'
-    : 'CustomerOnboarding';
-
   return (
     <Stack.Navigator
-      initialRouteName={initialRoute}
       screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
-      <Stack.Screen
-        name="CustomerOnboarding"
-        component={CustomerOnboardingScreen}
-      />
-      <Stack.Screen name="CustomerHome" component={CustomerHomeScreen} />
-      <Stack.Screen name="StaffLogin" component={StaffLoginScreen} />
-      <Stack.Screen name="StaffDashboard" component={StaffDashboardScreen} />
+      {session ? (
+        <Stack.Screen name="StaffDashboard" component={StaffDashboardScreen} />
+      ) : customer ? (
+        <Stack.Screen name="CustomerHome" component={CustomerHomeScreen} />
+      ) : (
+        <>
+          <Stack.Screen
+            name="CustomerOnboarding"
+            component={CustomerOnboardingScreen}
+          />
+          <Stack.Screen name="StaffLogin" component={StaffLoginScreen} />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

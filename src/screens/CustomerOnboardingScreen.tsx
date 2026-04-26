@@ -44,7 +44,6 @@ const CustomerOnboardingScreen: React.FC = () => {
         email: email.trim(),
         phone: phone.trim() || undefined,
       });
-      navigation.replace('CustomerHome');
     } catch (err: any) {
       setError(err?.message || 'Erro ao entrar. Tente novamente.');
     } finally {

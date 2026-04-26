@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useStaffContext} from '../../context/StaffContext';
 import StaffHomeTab from './StaffHomeTab';
 import StaffScanTab from './StaffScanTab';
@@ -37,6 +38,7 @@ const CLEAR_SENTINEL = '__clear__';
 
 const StaffDashboardScreen: React.FC = () => {
   const {session, switchMerchant} = useStaffContext();
+  const insets = useSafeAreaInsets();
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   const handleHistoryAdd = (item: HistoryItem) => {
@@ -52,7 +54,7 @@ const StaffDashboardScreen: React.FC = () => {
   return (
     <View style={styles.root}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top + 8}]}>
         <View>
           <Text style={styles.headerTitle}>Carimbai</Text>
           <Text style={styles.headerSub}>
@@ -131,7 +133,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.primaryDark,
     paddingHorizontal: 16,
-    paddingTop: 16,
     paddingBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -15,7 +15,7 @@ import type {
   RedeemResponse,
 } from '../types';
 
-const API_BASE_URL = 'https://carimbai-production.up.railway.app/api';
+const API_BASE_URL = 'https://carimbai.cloud/api';
 
 class ApiService {
   private baseUrl: string;

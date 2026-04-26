@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useCustomerContext} from '../context/CustomerContext';
 import {apiService} from '../services/api';
 import LoyaltyCard from '../components/LoyaltyCards';
@@ -19,6 +20,7 @@ import {COLORS} from '../utils/constants';
 
 const CustomerHomeScreen: React.FC = () => {
   const {customer, logout} = useCustomerContext();
+  const insets = useSafeAreaInsets();
 
   const [cards, setCards] = useState<Card[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -152,13 +154,16 @@ const CustomerHomeScreen: React.FC = () => {
       end={{x: 1, y: 1}}
       style={styles.container}>
       {/* Top nav */}
-      <View style={styles.navbar}>
+      <View style={[styles.navbar, {paddingTop: insets.top + 8}]}>
         <Text style={styles.navBrand}>🏷️ Carimbai</Text>
         <View style={styles.navRight}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
-          <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+          <TouchableOpacity
+            onPress={logout}
+            style={styles.logoutBtn}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
             <Text style={styles.logoutText}>Sair</Text>
           </TouchableOpacity>
         </View>
@@ -288,7 +293,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 16,
     paddingBottom: 8,
   },
   navBrand: {

@@ -7,16 +7,10 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useStaffContext} from '../../context/StaffContext';
-import type {RootStackParamList} from '../../navigation/AppNavigator';
 import {COLORS} from '../../utils/constants';
 
-type Nav = NativeStackNavigationProp<RootStackParamList>;
-
 const StaffSettingsTab: React.FC = () => {
-  const navigation = useNavigation<Nav>();
   const {session, logout} = useStaffContext();
 
   const handleLogout = () => {
@@ -27,7 +21,6 @@ const StaffSettingsTab: React.FC = () => {
         style: 'destructive',
         onPress: async () => {
           await logout();
-          navigation.replace('StaffLogin');
         },
       },
     ]);
